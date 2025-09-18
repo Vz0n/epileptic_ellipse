@@ -1,14 +1,14 @@
-## Epilleptic figures
+## Epileptic figures
 
 I made this when I was bored. 
 
 ### Usage
 
 ```
-./epilleptic_figures <figure>
+./epileptic_figures <figure>
 ```
 
-This program will just draw a figure in a SDL OpenGL window that will continously change colors in microseconds (epillepsia warning). The figures available can be viewed in the source code.
+This program will just draw a figure in a SDL OpenGL window that will continously change colors in microseconds (epilepsia warning). The figures available can be viewed in the source code.
 
 ### Compiling
 

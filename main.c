@@ -1,85 +1,64 @@
+#include "figures/rectangle.c"
+#include "figures/ellipse.c"
+#include "utils.h"
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <GL/glew.h>
-#include <sys/time.h>
-#include <SDL2/SDL.h>
-#include <math.h>
-#define PI 3.141592
-#define STEPS 512
-#define MAX_VALUE 2
 
-long get_time(){
-    struct timeval tm = {0};
+void print_usage(char* program_name, const fig_function* figures, int fig_count){
+    printf("usage: %s <figure>\n", program_name);
+    puts("draws a rainbow-flashing figure in a window");
+    puts("available figures: ");
 
-    gettimeofday(&tm, NULL);
-
-    return tm.tv_usec;
-}
-
-float phi(int j, int line, float delta){
-    float step = PI/delta;
-    int r = 1;
-
-    if(line){
-        return r*sinf(step*j);
+    for(int i = 0; i < fig_count; i++){
+        printf("- %s\n", figures[i].name);
     }
-
-    return r*cosf(step*j);
 }
 
 int main(int argc, char** argv){
 
-    int this_shit_is_running = 1;
+    const fig_function AVAILABLE_FIGURES[] = {
+        {
+            "ellipse",
+            &draw_ellipse
+        },
+        {
+            "rectangle",
+            &draw_rectangle
+        }
+    };
 
+    int figures_count = sizeof(AVAILABLE_FIGURES)/sizeof(fig_function);
+
+    if(argc < 2){
+        print_usage(argv[0], AVAILABLE_FIGURES, figures_count);
+
+        return 1;
+    }
+
+    void* selected_function = NULL;
+    char* fig = argv[1];
+
+    for(int i = 0; i < figures_count; i++){
+        // Remember that strcmp 
+        if(!strcmp(fig, AVAILABLE_FIGURES[i].name)){
+            selected_function = AVAILABLE_FIGURES[i].f;
+        }
+    }
+
+    if(!selected_function){
+        puts("unknown figure type selected");
+
+        return 1;
+    }
+
+    // Initialize SDL
     if(SDL_Init(SDL_INIT_VIDEO) != 0){
-        puts("uh oh");
+        printf("failed to init sdl: %s", SDL_GetError());
+
         return 1;
     }
 
-    struct SDL_Window *win = SDL_CreateWindow("UWU OWO", 100, 100, 800, 600, SDL_WINDOW_OPENGL);
-
-    if(win == 0){
-        printf("uh oh: %s\n", SDL_GetError());
-        return 1;
-    }
-    
-    SDL_GLContext ctx = SDL_GL_CreateContext(win);
-
-    SDL_GL_MakeCurrent(win, ctx);
-
-    // Now do some nasty OpenGL stuff
-    GLenum num = glewInit();
-    if(num != GLEW_OK){
-        printf("uh oh: %s\n", glewGetErrorString(num));
-        return 1;
-    }
-
-    while(this_shit_is_running){
-        SDL_Event event = {0};
-
-        SDL_GL_SwapWindow(win);
-        srand(get_time());
-
-        while(SDL_PollEvent(&event)){
-          if(event.type == 256){
-              this_shit_is_running = 0;
-              break;
-          }
-        }
-
-        glClear(GL_COLOR_BUFFER_BIT);
-        glBegin(GL_POLYGON);
-
-        float step_delta = STEPS/MAX_VALUE;
-
-        for(int i = 0; i <= STEPS; i++){
-            glVertex2f(phi(i, 0, step_delta), phi(i, 1, step_delta));
-            glColor3f(rand() % 2, rand() % 3,  rand() % 4);
-        }
-    
-        glEnd();
-        glFlush();
-    }
-
-    return 0;
+    puts("Press CTRL + C to close the window!");
+    return create_window_and_draw(selected_function);
 }

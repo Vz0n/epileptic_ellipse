@@ -39,7 +39,7 @@ int main(int argc, char** argv){
     struct SDL_Window *win = SDL_CreateWindow("UWU OWO", 100, 100, 800, 600, SDL_WINDOW_OPENGL);
 
     if(win == 0){
-        printf("Uh oh: %s\n", SDL_GetError());
+        printf("uh oh: %s\n", SDL_GetError());
         return 1;
     }
     
@@ -50,7 +50,7 @@ int main(int argc, char** argv){
     // Now do some nasty OpenGL stuff
     GLenum num = glewInit();
     if(num != GLEW_OK){
-        printf("uh oh: %s", glewGetErrorString(num));
+        printf("uh oh: %s\n", glewGetErrorString(num));
         return 1;
     }
 
@@ -73,7 +73,7 @@ int main(int argc, char** argv){
         float step_delta = STEPS/MAX_VALUE;
 
         for(int i = 0; i <= STEPS; i++){
-            glVertex3f(phi(i, 0, step_delta), phi(i, 1, step_delta), 0.5f);
+            glVertex2f(phi(i, 0, step_delta), phi(i, 1, step_delta));
             glColor3f(rand() % 2, rand() % 3,  rand() % 4);
         }
     

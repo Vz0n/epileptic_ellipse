@@ -53,9 +53,4 @@ int create_window_and_draw(void* drawer_function){
 
         r(rand());
     }
-
-    SDL_DestroyWindow(win);
-    SDL_Quit();
-
-    return 0;
 }
